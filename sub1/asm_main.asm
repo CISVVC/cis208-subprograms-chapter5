@@ -31,7 +31,7 @@ asm_main:
 
         mov     ebx, input1       ; store address of input1 into ebx
         mov     ecx, ret1         ; store return address into ecx
-        jmp     short get_int     ; read integer
+        jmp     get_int     ; read integer
 ret1:
         mov     eax, prompt2      ; print out prompt
         call    print_string
