@@ -1,0 +1,87 @@
+     1                                  ;
+     2                                  ; file: sub1.asm
+     3                                  ; Subprogram example program
+     4                                  
+     5                                  %include "asm_io.inc"
+     6                              <1> 	extern  read_int, print_int, print_string
+     7                              <1> 	extern	read_char, print_char, print_nl
+     8                              <1> 	extern  sub_dump_regs, sub_dump_mem, sub_dump_math, sub_dump_stack
+     9                              <1> 
+    10                              <1> %macro 	dump_regs 1
+    11                              <1> 	push	  dword %1
+    12                              <1> 	call	  sub_dump_regs
+    13                              <1> %endmacro
+    14                              <1> 
+    15                              <1> 
+    16                              <1> ;
+    17                              <1> ; usage: dump_mem label, start-address, # paragraphs
+    18                              <1> %macro  dump_mem 3
+    19                              <1> 	push	 dword %1
+    20                              <1> 	push	 dword %2
+    21                              <1> 	push	 dword %3
+    22                              <1> 	call	 sub_dump_mem
+    23                              <1> %endmacro
+    24                              <1> 
+    25                              <1> %macro	dump_math 1
+    26                              <1> 	push	 dword %1
+    27                              <1> 	call	 sub_dump_math
+    28                              <1> %endmacro
+    29                              <1> 
+    30                              <1> %macro  dump_stack 3
+    31                              <1> 	push	 dword %3
+    32                              <1>         push     dword %2
+    33                              <1> 	push	 dword %1
+    34                              <1>         call     sub_dump_stack
+    35                              <1> %endmacro
+    36                                  
+    37                                  segment .data
+    38 00000000 70313D25642C70323D-     print_format db "p1=%d,p2=%d,local1=%d,local2=%d",10,0
+    39 00000009 25642C6C6F63616C31-
+    40 00000012 3D25642C6C6F63616C-
+    41 0000001B 323D25640A00       
+    42                                  segment .bss
+    43                                  ;
+    44                                  ; These labels refer to double words used to store the inputs
+    45                                  ;
+    46                                  
+    47                                  %define  p1 [ebp+8] 
+    48                                  %define  p2 [ebp+12] 
+    49                                  
+    50                                  segment .text
+    51                                          global  asm_main
+    52                                          extern  printf
+    53                                  
+    54                                  asm_main:
+    55 00000000 C8080000                        enter   8,0               ; setup routine
+    56 00000004 60                              pusha
+    57                                  
+    58 00000005 8B4508                          mov   eax,p1
+    59 00000008 8B5D0C                          mov   ebx,p2
+    60 0000000B B90A000000                      mov   ecx,10
+    61 00000010 894DFC                          mov   [ebp-4],ecx
+    62 00000013 B914000000                      mov   ecx,20
+    63 00000018 894DF8                          mov   [ebp-8],ecx
+    64 0000001B FF75F8                          push  dword [ebp-8]
+    65 0000001E FF75FC                          push  dword [ebp-4]
+    66 00000021 53                              push  ebx
+    67 00000022 50                              push  eax
+    68 00000023 68[00000000]                    push  print_format
+    69 00000028 E8(00000000)                    call  printf
+    70 0000002D 83C414                          add   esp,20
+    71 00000030 61                              popa
+    72 00000031 B800000000                      mov     eax, 0            ; return back to C
+    73 00000036 C9                              leave                     
+    74 00000037 C3                              ret
+    75                                  ;
+    76                                  ; subprogram get_int
+    77                                  ; Parameters:
+    78                                  ;   ebx - add ess of dword to store integer into
+    79                                  ;   ecx - address of instruction to return to
+    80                                  ; Notes:
+    81                                  ;   value of eax is destroyed
+    82                                  get_int:
+    83 00000038 E8(00000000)                    call    read_int
+    84 0000003D 8903                            mov     [ebx], eax         ; store input into memory
+    85 0000003F FFE1                            jmp     ecx                ; jump back to caller
+    86                                  
+    87                                  

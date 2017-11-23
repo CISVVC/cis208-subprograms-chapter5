@@ -1,0 +1,107 @@
+     1                                  ;
+     2                                  ; file: sub2.asm
+     3                                  ; Subprogram example program
+     4                                  ;
+     5                                  
+     6                                  %include "asm_io.inc"
+     7                              <1> 	extern  read_int, print_int, print_string
+     8                              <1> 	extern	read_char, print_char, print_nl
+     9                              <1> 	extern  sub_dump_regs, sub_dump_mem, sub_dump_math, sub_dump_stack
+    10                              <1> 
+    11                              <1> %macro 	dump_regs 1
+    12                              <1> 	push	  dword %1
+    13                              <1> 	call	  sub_dump_regs
+    14                              <1> %endmacro
+    15                              <1> 
+    16                              <1> 
+    17                              <1> ;
+    18                              <1> ; usage: dump_mem label, start-address, # paragraphs
+    19                              <1> %macro  dump_mem 3
+    20                              <1> 	push	 dword %1
+    21                              <1> 	push	 dword %2
+    22                              <1> 	push	 dword %3
+    23                              <1> 	call	 sub_dump_mem
+    24                              <1> %endmacro
+    25                              <1> 
+    26                              <1> %macro	dump_math 1
+    27                              <1> 	push	 dword %1
+    28                              <1> 	call	 sub_dump_math
+    29                              <1> %endmacro
+    30                              <1> 
+    31                              <1> %macro  dump_stack 3
+    32                              <1> 	push	 dword %3
+    33                              <1>         push     dword %2
+    34                              <1> 	push	 dword %1
+    35                              <1>         call     sub_dump_stack
+    36                              <1> %endmacro
+    37                                  
+    38                                  segment .data
+    39 00000000 456E74657220746865-     prompt1 db    "Enter the integer: ", 0       ; don't forget nul terminator
+    40 00000009 20696E74656765723A-
+    41 00000012 2000               
+    42 00000014 456E74657220746865-     prompt2 db    "Enter the digit to find: ", 0
+    43 0000001D 20646967697420746F-
+    44 00000026 2066696E643A2000   
+    45                                  
+    46                                  segment .bss
+    47                                  ;
+    48                                  ; These labels refer to double words used to store the inputs
+    49                                  ;
+    50 00000000 <res 00000004>          input1  resd 1
+    51                                  
+    52                                   
+    53                                  
+    54                                  segment .text
+    55                                          global  asm_main
+    56                                  asm_main:
+    57 00000000 C8000000                        enter   0,0               ; setup routine
+    58 00000004 60                              pusha
+    59                                  
+    60 00000005 B8[00000000]                    mov     eax, prompt1      ; print out prompt
+    61 0000000A E8(00000000)                    call    print_string
+    62 0000000F E8(00000000)                    call    read_int
+    63 00000014 A3[00000000]                    mov     [input1],eax
+    64 00000019 B8[14000000]                    mov     eax, prompt2      ; print out prompt
+    65 0000001E E8(00000000)                    call    print_string
+    66 00000023 E8(00000000)                    call    read_int
+    67 00000028 89C3                            mov     ebx,eax
+    68 0000002A A1[00000000]                    mov     eax,[input1]
+    69 0000002F E812000000                      call    checkDigit 
+    70 00000034 E8(00000000)                    call    print_int
+    71 00000039 E8(00000000)                    call    print_nl
+    72                                  ;
+    73                                  ; next print out result message as series of steps
+    74                                  ;
+    75                                  
+    76                                  
+    77 0000003E 61                              popa
+    78 0000003F B800000000                      mov     eax, 0            ; return back to C
+    79 00000044 C9                              leave                     
+    80 00000045 C3                              ret
+    81                                  ;
+    82                                  ; subprogram checkDigit
+    83                                  ; Parameters:
+    84                                  ;   eax - value of integer to search
+    85                                  ;   ebx - value of digit
+    86                                  ; Notes:
+    87                                  ;   value of eax is destroyed
+    88                                  
+    89                                  checkDigit:
+    90                                  
+    91 00000046 B90A000000                      mov ecx,10
+    92                                  start:
+    93 0000004B 31D2                            xor edx,edx
+    94 0000004D F7F9                            idiv ecx
+    95 0000004F 83F800                          cmp eax,0
+    96 00000052 740D                            jz  end
+    97 00000054 39DA                            cmp edx,ebx
+    98 00000056 7402                            jz  is_true 
+    99 00000058 EBF1                            jmp start
+   100                                  
+   101                                  is_true:
+   102 0000005A B801000000                      mov eax,1
+   103 0000005F EB00                            jmp end
+   104                                  end:     
+   105 00000061 C3                              ret                        ; jump back to caller
+   106                                  
+   107                                  
