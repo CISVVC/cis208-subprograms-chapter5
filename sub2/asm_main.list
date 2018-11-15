@@ -97,7 +97,7 @@
     97 00000073 E8(00000000)                    call    print_nl          ; print new-line
     98                                  
     99 00000078 61                              popa
-   100 00000079 B864000000                      mov     eax, 100            ; return back to C
+   100 00000079 B800000000                      mov     eax, 0            ; return back to C
    101 0000007E C9                              leave                     
    102 0000007F C3                              ret
    103                                  ;

@@ -75,7 +75,7 @@
     75 00000025 BB[04000000]                    mov     ebx, input2
     76 0000002A B9[31000000]                    mov     ecx, $ + 7        ; ecx = this address + 7
     77 0000002F EB53                            jmp     short get_int
-    78                                  
+    78                                  ret2:
     79 00000031 A1[00000000]                    mov     eax, [input1]     ; eax = dword at input1
     80 00000036 0305[04000000]                  add     eax, [input2]     ; eax += dword at input2
     81 0000003C 89C3                            mov     ebx, eax          ; ebx = eax

@@ -20,9 +20,6 @@
 ;   *sump = sum;
 ; }
 ;
-; To assemble:
-; DJGPP:   nasm -f coff sub5.asm
-; Borland: nasm -f obj  sub5.asm
 
 segment .text
         global  calc_sum

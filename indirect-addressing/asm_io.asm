@@ -55,7 +55,6 @@ segment .data
 %endif
 
 int_format	    db  "%i", 0
-uint_format	    db  "%u", 0
 string_format       db  "%s", 0
 reg_format	    db  "Register Dump # %d", NL
 		    db  "EAX = %.8X EBX = %.8X ECX = %.8X EDX = %.8X", NL
@@ -90,7 +89,7 @@ segment text public align=1 class=code use32
 %else
 segment .text
 %endif
-	global	read_int, print_int, print_uint,print_string, read_char
+	global	read_int, print_int, print_string, read_char
 	global  print_char, print_nl, sub_dump_regs, sub_dump_mem
         global  sub_dump_math, sub_dump_stack
         extern  _scanf, _printf, _getchar, _putchar
@@ -113,14 +112,13 @@ read_int:
 	leave
 	ret
 
-
-print_uint:
+print_int:
 	enter	0,0
 	pusha
 	pushf
 
 	push	eax
-	push	dword uint_format
+	push	dword int_format
 	call	_printf
 	pop	ecx
 	pop	ecx

@@ -61,7 +61,7 @@ asm_main:
         call    print_nl          ; print new-line
 
         popa
-        mov     eax, 100            ; return back to C
+        mov     eax, 0            ; return back to C
         leave                     
         ret
 ;

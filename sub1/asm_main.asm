@@ -39,7 +39,7 @@ ret1:
         mov     ebx, input2
         mov     ecx, $ + 7        ; ecx = this address + 7
         jmp     short get_int
-
+ret2:
         mov     eax, [input1]     ; eax = dword at input1
         add     eax, [input2]     ; eax += dword at input2
         mov     ebx, eax          ; ebx = eax
